@@ -1,0 +1,281 @@
+---
+id: precomputations
+title: Precomputations
+author: Aarav Sharma
+description: 'Precomputing values to speed up slow solutions.'
+frequency: 3
+prerequisites:
+  - intro-complete
+---
+
+
+Precomputation is an optimization technique where we calculate and store the results of expensive or frequently repeated computations, before processing queries or executing the main part of our algorithm. This allows for data that we need often to be accessed in $\mathcal{O}(1)$ time.
+
+
+<!--
+<Resources>
+    <Resource
+        source="CSA"
+        title="Introduction to Graphs"
+        url="introduction_to_graphs"
+        starred
+    >
+        interactive
+    </Resource>
+    <Resource
+        source="CSA"
+        title="Graph Representations"
+        url="graph_representation"
+        starred
+    >
+        interactive - adjacency lists and matrices
+    </Resource>
+    <Resource source="CPH" title="11 - Basics of Graphs" starred>
+        graph terminology, representation
+    </Resource>
+    <Resource source="IUSACO" title="10.1 to 10.3 - Graph Theory">
+        graph basics and representation, trees
+    </Resource>
+    <Resource source="PAPS" title="6.4 - Graphs">
+        adjacency matrices, lists, maps
+    </Resource>
+</Resources> -->
+
+
+
+
+## What does Precomputation Look Like?
+
+
+Here are some common examples of precomputation techniques:
+- Finding the frequency of each element in an array beforehand
+- Noting down where each element appears in an array beforehand
+- Performing an operation on each element of an array beforehand
+
+
+Another very well known (but not required for Bronze) example of a precomputation technique can be found [here](/silver/prefix-sums).
+
+
+## Example - Cow Gymnastics
+
+
+<FocusProblem problem="tutorial" />
+
+
+You are probably familiar with [a solution](https://usaco.org/current/data/sol_gymnastics_bronze_dec19.html) that runs in $\mathcal{O}(KN^3)$ time.
+Try finding a solution to this problem that runs in $\mathcal{O}(KN^2)$ time.
+
+
+<Spoiler title="Hint">
+
+
+Is there anything we can precompute before we run the main code?
+
+
+</Spoiler>
+
+
+<Spoiler title="Answer to Hint">
+We can precompute the positions of all the cows for every contest beforehand! Try your best to implement this before moving on.
+</Spoiler>
+
+
+
+
+## Faster Solution
+
+
+Instead of doing the brute force solution in which we find the index of each contest for every pair of cows, we can precompute the positions of a cow while we read the ranking array.
+
+
+Then for every pair of cows, we just check the positions for every contest to see if the pair is consistent.
+
+
+## Implementation
+
+
+**Time Complexity:** $\mathcal{O}(KN^2)$
+
+
+<LanguageSection>
+<CPPSection>
+
+
+```cpp
+#include <iostream>
+#include <fstream>
+#include <vector>
+
+
+int main() {
+    std::ifstream infile("gymnastics.in");
+    std::ofstream outfile("gymnastics.out");
+
+
+    int K, N;
+    infile >> K >> N;
+
+
+    std::vector<std::vector<int>> positions(K, std::vector<int>(N + 1));
+   
+    for (int i = 0; i < K; ++i) {
+        for (int j = 0; j < N; ++j) {
+            int cow;
+            infile >> cow;
+            positions[i][cow] = j;
+        }
+    }
+
+
+    int consistent_pairs = 0;
+
+
+    for (int i = 1; i <= N; ++i) {
+        for (int j = i + 1; j <= N; ++j) {
+            bool i_before_j = true;
+            bool j_before_i = true;
+            for (int s = 0; s < K; ++s) {
+                if (positions[s][i] > positions[s][j]) {
+                    i_before_j = false;
+                }
+                if (positions[s][j] > positions[s][i]) {
+                    j_before_i = false;
+                }
+            }
+            if (i_before_j || j_before_i) {
+                consistent_pairs++;
+            }
+        }
+    }
+
+
+    outfile << consistent_pairs << std::endl;
+
+
+    infile.close();
+    outfile.close();
+    return 0;
+}
+
+
+
+
+```
+
+
+</CPPSection>
+<JavaSection>
+
+
+```java
+import java.io.*;
+import java.util.*;
+
+
+public class Gymnastics {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader("gymnastics.in"));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("gymnastics.out")));
+       
+        String[] input_data = br.readLine().split(" ");
+        int K = Integer.parseInt(input_data[0]);
+        int N = Integer.parseInt(input_data[1]);
+       
+        int[][] positions = new int[K][N + 1];
+       
+        for (int i = 0; i < K; i++) {
+            String[] ranking = br.readLine().split(" ");
+            for (int rank = 0; rank < N; rank++) {
+                int cow = Integer.parseInt(ranking[rank]);
+                positions[i][cow] = rank;
+            }
+        }
+       
+        int consistent_pairs = 0;
+
+
+        for (int i = 1; i <= N; i++) {
+            for (int j = i + 1; j <= N; j++) {
+                boolean i_before_j = true;
+                boolean j_before_i = true;
+                for (int s = 0; s < K; s++) {
+                    if (positions[s][i] > positions[s][j]) {
+                        i_before_j = false;
+                    }
+                    if (positions[s][j] > positions[s][i]) {
+                        j_before_i = false;
+                    }
+                }
+                if (i_before_j || j_before_i) {
+                    consistent_pairs++;
+                }
+            }
+        }
+
+
+        pw.println(consistent_pairs);
+        br.close();
+        pw.close();
+    }
+}
+
+
+```
+
+
+</JavaSection>
+<PySection>
+
+
+```py
+import sys
+sys.stdin = open("gymnastics.in","r")
+sys.stdout = open("gymnastics.out", "w")
+input_data = sys.stdin.read().split()
+
+
+K = int(input_data[0])
+N = int(input_data[1])
+index = 2
+
+
+positions = []
+for i in range(K):
+    ranking = list(map(int, input_data[index:index+N]))
+    index += N
+   
+    # Precompute positions of each cow
+    pos = [0] * (N + 1)
+    for rank, cow in enumerate(ranking):
+        pos[cow] = rank
+    positions.append(pos)
+
+
+consistent_pairs = 0
+
+
+for i in range(1, N + 1):
+    for j in range(i + 1, N + 1):
+        i_before_j = True
+        j_before_i = True
+        for s in range(K):
+            if positions[s][i] > positions[s][j]:
+                i_before_j = False
+            if positions[s][j] > positions[s][i]:
+                j_before_i = False
+        if i_before_j or j_before_i:
+            consistent_pairs += 1
+
+
+print(consistent_pairs)
+```
+
+
+</PySection>
+</LanguageSection>
+
+
+## Problems
+
+
+<Problems problems="general" />
