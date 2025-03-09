@@ -1,0 +1,54 @@
+{
+  "MODULE_ID": "intro-graphs",
+  "tutorial": [
+    {
+      "uniqueId": "usaco-965",
+      "name": "Livestock Lineup",
+      "url": "http://www.usaco.org/index.php?page=viewproblem2&cpid=965",
+      "source": "Bronze",
+      "difficulty": "Normal",
+      "isStarred": false,
+      "tags": ["Permutation"],
+      "solutionMetadata": {
+        "kind": "internal"
+      }
+    }
+  ],
+  "general": [
+    {
+      "uniqueId": "usaco-1492",
+      "name": "Making Mexes",
+      "url": "https://usaco.org/index.php?page=viewproblem2&cpid=1492",
+      "source": "Bronze",
+      "difficulty": "Normal",
+      "isStarred": true,
+      "tags": [],
+      "solutionMetadata": {
+        "kind": "USACO"
+      }
+    },
+    {
+      "uniqueId": "usaco-1469",
+      "name": "Cow Checkups",
+      "url": "https://usaco.org/index.php?page=viewproblem2&cpid=1469",
+      "source": "Bronze",
+      "difficulty": "Normal",
+      "isStarred": false,
+      "tags": [],
+      "solutionMetadata": {
+        "kind": "USACO"
+      }
+    },
+    {
+      "uniqueId": "usaco-1445",
+      "name": "It's Mooin' Time",
+      "url": "https://usaco.org/index.php?page=viewproblem2&cpid=1445",
+      "source": "Bronze",
+      "difficulty": "Hard",
+      "tags": [],
+      "solutionMetadata": {
+        "kind": "USACO"
+      }
+    }
+  ]
+}
